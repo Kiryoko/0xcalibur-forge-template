@@ -149,6 +149,10 @@ extendEnvironment((hre) => {
     }
   };
 
+  hre.getAllNetworks = () => {
+    return Object.keys(hre.config.networks);
+  };
+
   hre.getChainIdByNetworkName = (name) => {
     return getNetworkConfigByName(name).chainId;
   };
