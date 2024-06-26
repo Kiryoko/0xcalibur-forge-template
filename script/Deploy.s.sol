@@ -6,7 +6,7 @@ import "utils/BaseScript.sol";
 contract DeployScript is BaseScript {
     function deploy() public {
         vm.startBroadcast();
-        deploy("MyContract", "MyContract.sol:MyContract", abi.encode(tx.origin));
+        deploy("Contract", "Contract.sol:Contract", abi.encode(tx.origin));
         vm.stopBroadcast();
     }
 }
