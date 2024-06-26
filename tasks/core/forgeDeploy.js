@@ -75,9 +75,16 @@ module.exports = async function (taskArgs, hre) {
         }
     }
 
-    cmd = `${env_args} forge script ${script} --rpc-url ${hre.network.config.url} ${broadcast_args} ${verify_args} ${taskArgs.extra || ""} ${hre.network.config.forgeDeployExtraArgs || ""} --slow --private-key *******`.replace(/\s+/g, ' ');
+    if (!process.env.PRIVATE_KEY && !process.env.KEYSTORE_PATH) {
+        console.error("Either PRIVATE_KEY or KEYSTORE_PATH must be set in the environment");
+        process.exit(1);
+    }
+
+    const deployerAuthentication = process.env.PRIVATE_KEY ? "--private-key" : "--keystore";
+
+    cmd = `${env_args} forge script ${script} --rpc-url ${hre.network.config.url} ${broadcast_args} ${verify_args} ${taskArgs.extra || ""} ${hre.network.config.forgeDeployExtraArgs || ""} --slow ${deployerAuthentication} *******`.replace(/\s+/g, ' ');
     console.log(cmd);
-    result = await shell.exec(cmd.replace('*******', process.env.PRIVATE_KEY), { fatal: false });
+    result = await shell.exec(cmd.replace('*******', process.env.PRIVATE_KEY ?? process.env.KEYSTORE_PATH), { fatal: false });
     await shell.exec("./forge-deploy sync", { silent: true });
     await hre.run("post-deploy");
 
